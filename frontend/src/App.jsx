@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
@@ -11,24 +11,6 @@ import { AgentDashboard } from './pages/AgentDashboard';
 import { TicketDetail } from './pages/TicketDetail';
 import { NotFound } from './pages/NotFound';
 
-const RootRedirect = () => {
-  const { user, isAuthenticated, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="loading-center">
-        <div className="spinner"></div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated || !user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <Navigate to={user.role === 'agent' ? '/agent-dashboard' : '/dashboard'} replace />;
-};
-
 function App() {
   return (
     <AuthProvider>
@@ -36,7 +18,7 @@ function App() {
         <div className="app-container">
           <Navbar />
           <Routes>
-            <Route path="/" element={<RootRedirect />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route
