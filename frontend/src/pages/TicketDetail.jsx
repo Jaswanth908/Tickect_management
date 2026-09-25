@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { StatusBadge, PriorityBadge } from '../components/StatusBadge';
@@ -75,13 +75,19 @@ export const TicketDetail = () => {
       setUpdating(true);
       const payload = {
         status,
-        priority,
-        assigned_to: assignedTo ? parseInt(assignedTo, 10) : null
+        priority
       };
+
+      if (user?.role === 'agent') {
+        payload.assigned_to = assignedTo ? parseInt(assignedTo, 10) : null;
+      }
 
       const res = await api.put(`/tickets/${id}`, payload);
       if (res.data && res.data.ticket) {
         setTicket(res.data.ticket);
+        setStatus(res.data.ticket.status);
+        setPriority(res.data.ticket.priority);
+        setAssignedTo(res.data.ticket.assigned_to ? String(res.data.ticket.assigned_to) : '');
         setSuccessMsg('Ticket updated successfully.');
         setTimeout(() => setSuccessMsg(''), 3500);
       }
@@ -174,7 +180,7 @@ export const TicketDetail = () => {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: isAgent ? '2fr 1fr' : '1fr', gap: '1.5rem', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem', alignItems: 'start' }}>
         <div>
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: '1.75rem', boxShadow: 'var(--shadow-sm)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
@@ -221,42 +227,42 @@ export const TicketDetail = () => {
           <CommentSection ticketId={ticket.id} />
         </div>
 
-        {isAgent && (
-          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: '1.5rem', boxShadow: 'var(--shadow-sm)' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Shield size={18} color="#2563eb" />
-              Ticket Management
-            </h3>
+        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: '1.5rem', boxShadow: 'var(--shadow-sm)' }}>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Shield size={18} color="#2563eb" />
+            Ticket Actions
+          </h3>
 
-            <form onSubmit={handleUpdateTicket}>
-              <div className="form-group">
-                <label className="form-label">Status</label>
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="form-control"
-                >
-                  <option value="Open">Open</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Resolved">Resolved</option>
-                  <option value="Closed">Closed</option>
-                </select>
-              </div>
+          <form onSubmit={handleUpdateTicket}>
+            <div className="form-group">
+              <label className="form-label">Status</label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="form-control"
+              >
+                <option value="Open">Open</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Closed">Closed</option>
+              </select>
+            </div>
 
-              <div className="form-group">
-                <label className="form-label">Priority</label>
-                <select
-                  value={priority}
-                  onChange={(e) => setPriority(e.target.value)}
-                  className="form-control"
-                >
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                  <option value="Urgent">Urgent</option>
-                </select>
-              </div>
+            <div className="form-group">
+              <label className="form-label">Priority</label>
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+                className="form-control"
+              >
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Urgent">Urgent</option>
+              </select>
+            </div>
 
+            {isAgent && (
               <div className="form-group">
                 <label className="form-label">Assign Agent</label>
                 <select
@@ -272,30 +278,30 @@ export const TicketDetail = () => {
                   ))}
                 </select>
               </div>
+            )}
 
-              <button
-                type="submit"
-                className="btn btn-primary"
-                style={{ width: '100%', marginTop: '0.5rem' }}
-                disabled={updating}
-              >
-                {updating ? 'Saving changes...' : 'Save Updates'}
-              </button>
-            </form>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: '100%', marginTop: '0.5rem' }}
+              disabled={updating}
+            >
+              {updating ? 'Saving changes...' : 'Save Updates'}
+            </button>
+          </form>
 
-            <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
-              <button
-                type="button"
-                onClick={handleDeleteTicket}
-                className="btn btn-danger"
-                style={{ width: '100%', fontSize: '0.85rem' }}
-              >
-                <Trash2 size={16} />
-                <span>Delete Ticket</span>
-              </button>
-            </div>
+          <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
+            <button
+              type="button"
+              onClick={handleDeleteTicket}
+              className="btn btn-danger"
+              style={{ width: '100%', fontSize: '0.85rem' }}
+            >
+              <Trash2 size={16} />
+              <span>Delete Ticket</span>
+            </button>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@
 
 A beginner-friendly, full-stack web-based Support Ticket Management System built with **React.js**, **Node.js (Express.js)**, **MySQL**, and **JWT Authentication**. Customers can create and track support tickets, and Support Agents can manage, assign, prioritize, and respond to tickets with a real-time dashboard.
 
----
+
 
 ## 1. Project Overview & Features
 
