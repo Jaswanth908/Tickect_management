@@ -29,7 +29,11 @@ export const Login = () => {
         navigate('/dashboard');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      if (!err.response || err.code === 'ERR_NETWORK') {
+        setError('Cannot connect to backend server. Make sure the backend is running on http://localhost:5000 (Run "npm run dev" from the project root).');
+      } else {
+        setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }
@@ -96,7 +100,7 @@ export const Login = () => {
           </button>
         </form>
 
-        {/* Demo Accounts Quick-Fill Helper for Evaluator */}
+        {/* Demo Accounts Quick-Fill Helper */}
         <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)', fontSize: '0.825rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#475569', fontWeight: 600, marginBottom: '0.5rem' }}>
             <Sparkles size={14} color="#f59e0b" />

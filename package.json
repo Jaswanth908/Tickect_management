@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "Support Ticket Management System - Full Stack Junior Developer Technical Assessment",
   "scripts": {
+    "dev": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "start": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"npm --prefix backend start\" \"npm --prefix frontend run dev\"",
     "test": "npm --prefix backend test",
     "backend:dev": "npm --prefix backend run dev",
     "backend:start": "npm --prefix backend start",
@@ -18,5 +20,8 @@
     "jwt"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
 }
