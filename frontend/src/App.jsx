@@ -11,7 +11,6 @@ import { AgentDashboard } from './pages/AgentDashboard';
 import { TicketDetail } from './pages/TicketDetail';
 import { NotFound } from './pages/NotFound';
 
-// Root redirect handler based on auth state
 const RootRedirect = () => {
   const { user, isAuthenticated, loading } = useAuth();
 
@@ -37,14 +36,9 @@ function App() {
         <div className="app-container">
           <Navbar />
           <Routes>
-            {/* Root Route */}
             <Route path="/" element={<RootRedirect />} />
-
-            {/* Public Auth Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-
-            {/* Protected Customer Routes */}
             <Route
               path="/dashboard"
               element={
@@ -53,8 +47,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
-            {/* Protected Agent Routes */}
             <Route
               path="/agent-dashboard"
               element={
@@ -63,8 +55,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
-            {/* Protected Shared Routes (Customer & Agent) */}
             <Route
               path="/tickets/:id"
               element={
@@ -73,8 +63,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
-            {/* 404 Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

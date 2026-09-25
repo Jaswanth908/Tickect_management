@@ -19,7 +19,6 @@ export const ProtectedRoute = ({ children, allowedRoles }) => {
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    // If role unauthorized, route to appropriate dashboard
     const fallback = user.role === 'agent' ? '/agent-dashboard' : '/dashboard';
     return <Navigate to={fallback} replace />;
   }

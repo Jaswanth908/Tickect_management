@@ -1,7 +1,3 @@
-/**
- * Role Authorization Middleware
- * Restricts route access to specified roles (e.g. 'agent' or 'customer')
- */
 const authorizeRoles = (...allowedRoles) => {
   return (req, res, next) => {
     if (!req.user || !req.user.role) {

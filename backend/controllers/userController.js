@@ -1,9 +1,5 @@
 const { pool } = require('../config/db');
 
-/**
- * GET /api/users
- * Retrieve users or agents list (Agent access only)
- */
 const getUsers = async (req, res, next) => {
   try {
     const { role } = req.query;

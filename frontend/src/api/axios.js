@@ -7,7 +7,6 @@ const api = axios.create({
   }
 });
 
-// Attach JWT Bearer token to all outgoing requests
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -19,12 +18,10 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle unauthenticated 401 responses
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // If token expired or invalid, clear stored credentials
       const currentPath = window.location.pathname;
       if (currentPath !== '/login' && currentPath !== '/register') {
         localStorage.removeItem('token');

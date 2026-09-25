@@ -2,7 +2,6 @@ const request = require('supertest');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// Mock database pool before requiring app
 jest.mock('../backend/config/db', () => ({
   pool: {
     execute: jest.fn()
@@ -45,14 +44,11 @@ describe('Support Ticket Management System - Automated API Tests', () => {
     jest.resetAllMocks();
   });
 
-  // -------------------------------------------------------------
-  // 1. Authentication Tests
-  // -------------------------------------------------------------
   describe('Authentication Tests (/api/auth)', () => {
     test('1. Valid registration succeeds (201)', async () => {
       pool.execute
-        .mockResolvedValueOnce([[]]) // no existing user
-        .mockResolvedValueOnce([{ insertId: 5 }]); // insert result
+        .mockResolvedValueOnce([[]])
+        .mockResolvedValueOnce([{ insertId: 5 }]);
 
       const res = await request(app)
         .post('/api/auth/register')
@@ -131,9 +127,6 @@ describe('Support Ticket Management System - Automated API Tests', () => {
     });
   });
 
-  // -------------------------------------------------------------
-  // 2. Ticket Management Tests
-  // -------------------------------------------------------------
   describe('Ticket Management Tests (/api/tickets)', () => {
     test('5. Unauthorized user cannot access protected data (401)', async () => {
       const res = await request(app).get('/api/tickets');
@@ -143,7 +136,7 @@ describe('Support Ticket Management System - Automated API Tests', () => {
 
     test('6. Ticket creation succeeds for authenticated customer (201)', async () => {
       pool.execute
-        .mockResolvedValueOnce([{ insertId: 10 }]) // insert ticket
+        .mockResolvedValueOnce([{ insertId: 10 }])
         .mockResolvedValueOnce([[
           {
             id: 10,
@@ -157,7 +150,7 @@ describe('Support Ticket Management System - Automated API Tests', () => {
             customer_name: mockCustomer.name,
             customer_email: mockCustomer.email
           }
-        ]]); // select inserted ticket
+        ]]);
 
       const res = await request(app)
         .post('/api/tickets')
@@ -174,7 +167,6 @@ describe('Support Ticket Management System - Automated API Tests', () => {
     });
 
     test('7. Customer cannot access another customer\'s ticket (403)', async () => {
-      // Ticket belongs to customer 1
       pool.execute.mockResolvedValueOnce([[
         {
           id: 10,
@@ -187,7 +179,6 @@ describe('Support Ticket Management System - Automated API Tests', () => {
         }
       ]]);
 
-      // Customer 2 tries to access ticket 10
       const res = await request(app)
         .get('/api/tickets/10')
         .set('Authorization', `Bearer ${otherCustomerToken}`);
@@ -218,9 +209,6 @@ describe('Support Ticket Management System - Automated API Tests', () => {
     });
 
     test('10. Agent can update ticket status and priority (200)', async () => {
-      // 1: find existing ticket
-      // 2: execute update
-      // 3: select updated ticket
       pool.execute
         .mockResolvedValueOnce([[{ id: 10, user_id: 1, status: 'Open' }]])
         .mockResolvedValueOnce([{ affectedRows: 1 }])
@@ -273,9 +261,6 @@ describe('Support Ticket Management System - Automated API Tests', () => {
     });
 
     test('13. Authenticated user can add comment to ticket (201)', async () => {
-      // 1: verify ticket exists
-      // 2: insert comment
-      // 3: select created comment
       pool.execute
         .mockResolvedValueOnce([[{ id: 10, user_id: mockCustomer.id, status: 'Open' }]])
         .mockResolvedValueOnce([{ insertId: 50 }])

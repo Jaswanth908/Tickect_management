@@ -3,12 +3,6 @@ const { pool } = require('../config/db');
 const ALLOWED_STATUSES = ['Open', 'In Progress', 'Resolved', 'Closed'];
 const ALLOWED_PRIORITIES = ['Low', 'Medium', 'High', 'Urgent'];
 
-/**
- * GET /api/tickets
- * Get tickets list.
- * - Customer: Only their own tickets.
- * - Agent: All tickets with optional search, filter, and sort.
- */
 const getTickets = async (req, res, next) => {
   try {
     const { role, id: userId } = req.user;
@@ -17,25 +11,21 @@ const getTickets = async (req, res, next) => {
     const conditions = [];
     const params = [];
 
-    // Role-based visibility
     if (role === 'customer') {
       conditions.push('t.user_id = ?');
       params.push(userId);
     }
 
-    // Filter by status
     if (status && ALLOWED_STATUSES.includes(status)) {
       conditions.push('t.status = ?');
       params.push(status);
     }
 
-    // Filter by priority
     if (priority && ALLOWED_PRIORITIES.includes(priority)) {
       conditions.push('t.priority = ?');
       params.push(priority);
     }
 
-    // Search keyword in subject or description or customer name
     if (search && search.trim() !== '') {
       conditions.push('(t.subject LIKE ? OR t.description LIKE ? OR u.name LIKE ?)');
       const searchTerm = `%${search.trim()}%`;
@@ -44,7 +34,6 @@ const getTickets = async (req, res, next) => {
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-    // Safe sorting columns
     const allowedSortFields = ['created_at', 'updated_at', 'priority', 'status', 'id'];
     const safeSortBy = allowedSortFields.includes(sortBy) ? `t.${sortBy}` : 't.created_at';
     const safeSortOrder = sortOrder.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
@@ -83,16 +72,11 @@ const getTickets = async (req, res, next) => {
   }
 };
 
-/**
- * POST /api/tickets
- * Create a new ticket (Customer capability)
- */
 const createTicket = async (req, res, next) => {
   try {
     const { subject, description, priority = 'Medium' } = req.body;
     const userId = req.user.id;
 
-    // Validation
     if (!subject || !subject.trim()) {
       return res.status(400).json({
         success: false,
@@ -117,7 +101,6 @@ const createTicket = async (req, res, next) => {
 
     const ticketId = result.insertId;
 
-    // Fetch newly created ticket with author details
     const [createdRows] = await pool.execute(
       `SELECT 
         t.id,
@@ -147,12 +130,6 @@ const createTicket = async (req, res, next) => {
   }
 };
 
-/**
- * GET /api/tickets/:id
- * Get details of a specific ticket.
- * - Customer: Only permitted if they own the ticket.
- * - Agent: Permitted for any ticket.
- */
 const getTicketById = async (req, res, next) => {
   try {
     const ticketId = parseInt(req.params.id, 10);
@@ -194,7 +171,6 @@ const getTicketById = async (req, res, next) => {
 
     const ticket = tickets[0];
 
-    // Authorization check: Customer can only view their own ticket
     if (req.user.role === 'customer' && ticket.user_id !== req.user.id) {
       return res.status(403).json({
         success: false,
@@ -211,12 +187,6 @@ const getTicketById = async (req, res, next) => {
   }
 };
 
-/**
- * PUT /api/tickets/:id
- * Update ticket details (status, priority, assigned_to).
- * - Agent: Can update status, priority, assigned_to.
- * - Customer: Can only update subject/description if ticket is Open (or forbidden from changing status/assignee).
- */
 const updateTicket = async (req, res, next) => {
   try {
     const ticketId = parseInt(req.params.id, 10);
@@ -227,7 +197,6 @@ const updateTicket = async (req, res, next) => {
       });
     }
 
-    // Check if ticket exists
     const [existing] = await pool.execute(
       'SELECT id, user_id, status FROM tickets WHERE id = ? LIMIT 1',
       [ticketId]
@@ -243,9 +212,7 @@ const updateTicket = async (req, res, next) => {
     const currentTicket = existing[0];
     const { status, priority, assigned_to, subject, description } = req.body;
 
-    // Role-based logic
     if (req.user.role === 'customer') {
-      // Customer cannot update other customer's tickets
       if (currentTicket.user_id !== req.user.id) {
         return res.status(403).json({
           success: false,
@@ -253,7 +220,6 @@ const updateTicket = async (req, res, next) => {
         });
       }
 
-      // Customer cannot change status or assign agent
       if (status !== undefined || assigned_to !== undefined) {
         return res.status(403).json({
           success: false,
@@ -261,7 +227,6 @@ const updateTicket = async (req, res, next) => {
         });
       }
 
-      // Customer updates subject / description
       const updates = [];
       const values = [];
 
@@ -291,7 +256,6 @@ const updateTicket = async (req, res, next) => {
         values
       );
     } else if (req.user.role === 'agent') {
-      // Agent updates status, priority, assigned_to
       const updates = [];
       const values = [];
 
@@ -321,7 +285,6 @@ const updateTicket = async (req, res, next) => {
         if (assigned_to === null || assigned_to === '' || assigned_to === 0) {
           updates.push('assigned_to = NULL');
         } else {
-          // Verify assigned_to user is an agent
           const [agentCheck] = await pool.execute(
             'SELECT id FROM users WHERE id = ? AND role = "agent" LIMIT 1',
             [assigned_to]
@@ -351,7 +314,6 @@ const updateTicket = async (req, res, next) => {
       );
     }
 
-    // Fetch and return updated ticket
     const [updatedRows] = await pool.execute(
       `SELECT 
         t.id,
@@ -384,10 +346,6 @@ const updateTicket = async (req, res, next) => {
   }
 };
 
-/**
- * DELETE /api/tickets/:id
- * Delete a ticket
- */
 const deleteTicket = async (req, res, next) => {
   try {
     const ticketId = parseInt(req.params.id, 10);
@@ -412,7 +370,6 @@ const deleteTicket = async (req, res, next) => {
 
     const ticket = tickets[0];
 
-    // Customer can only delete their own ticket
     if (req.user.role === 'customer' && ticket.user_id !== req.user.id) {
       return res.status(403).json({
         success: false,
@@ -431,10 +388,6 @@ const deleteTicket = async (req, res, next) => {
   }
 };
 
-/**
- * GET /api/tickets/stats
- * Get ticket statistics for agent dashboard
- */
 const getTicketStats = async (req, res, next) => {
   try {
     const [rows] = await pool.execute(`

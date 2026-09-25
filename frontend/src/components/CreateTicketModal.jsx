@@ -15,7 +15,6 @@ export const CreateTicketModal = ({ isOpen, onClose, onTicketCreated }) => {
     e.preventDefault();
     setError('');
 
-    // Client-side validation
     if (!subject.trim()) {
       setError('Please enter a ticket subject.');
       return;

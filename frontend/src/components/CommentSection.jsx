@@ -17,7 +17,7 @@ export const CommentSection = ({ ticketId }) => {
       const res = await api.get(`/tickets/${ticketId}/comments`);
       setComments(res.data.comments || []);
     } catch (err) {
-      console.error('Failed to load comments:', err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -119,7 +119,6 @@ export const CommentSection = ({ ticketId }) => {
         </div>
       )}
 
-      {/* Add comment form */}
       <form onSubmit={handleSubmit} style={{ marginTop: '1.5rem' }}>
         {error && (
           <div className="alert alert-error">

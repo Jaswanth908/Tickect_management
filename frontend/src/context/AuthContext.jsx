@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [loading, setLoading] = useState(true);
 
-  // Initialize user from localStorage or fetch /api/auth/me
   useEffect(() => {
     const initializeAuth = async () => {
       const storedToken = localStorage.getItem('token');
@@ -17,14 +16,12 @@ export const AuthProvider = ({ children }) => {
       if (storedToken && storedUser) {
         try {
           setUser(JSON.parse(storedUser));
-          // Verify with backend
           const res = await api.get('/auth/me');
           if (res.data && res.data.user) {
             setUser(res.data.user);
             localStorage.setItem('user', JSON.stringify(res.data.user));
           }
         } catch (error) {
-          console.warn('Failed to verify token:', error);
           logout();
         }
       }

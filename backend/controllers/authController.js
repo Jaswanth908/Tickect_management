@@ -2,9 +2,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { pool } = require('../config/db');
 
-/**
- * Generate JWT token helper
- */
 const generateToken = (user) => {
   const secret = process.env.JWT_SECRET || 'super_secret_jwt_key_support_tickets_2024';
   const expiresIn = process.env.JWT_EXPIRES_IN || '24h';
@@ -21,15 +18,10 @@ const generateToken = (user) => {
   );
 };
 
-/**
- * POST /api/auth/register
- * Register a new customer (or agent if specified)
- */
 const register = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // Validation
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -53,10 +45,8 @@ const register = async (req, res, next) => {
       });
     }
 
-    // Role validation: default to customer
     const userRole = role === 'agent' ? 'agent' : 'customer';
 
-    // Check if user already exists
     const [existingUsers] = await pool.execute(
       'SELECT id FROM users WHERE email = ? LIMIT 1',
       [trimmedEmail]
@@ -69,11 +59,9 @@ const register = async (req, res, next) => {
       });
     }
 
-    // Hash password
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // Insert user into database
     const [result] = await pool.execute(
       'INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)',
       [name.trim(), trimmedEmail, passwordHash, userRole]
@@ -99,10 +87,6 @@ const register = async (req, res, next) => {
   }
 };
 
-/**
- * POST /api/auth/login
- * Authenticate customer or support agent
- */
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -116,7 +100,6 @@ const login = async (req, res, next) => {
 
     const trimmedEmail = email.trim().toLowerCase();
 
-    // Find user by email
     const [users] = await pool.execute(
       'SELECT id, name, email, password_hash, role, created_at FROM users WHERE email = ? LIMIT 1',
       [trimmedEmail]
@@ -131,7 +114,6 @@ const login = async (req, res, next) => {
 
     const user = users[0];
 
-    // Compare password
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
       return res.status(401).json({
@@ -160,10 +142,6 @@ const login = async (req, res, next) => {
   }
 };
 
-/**
- * GET /api/auth/me
- * Get current authenticated user profile
- */
 const getMe = async (req, res, next) => {
   try {
     const [users] = await pool.execute(

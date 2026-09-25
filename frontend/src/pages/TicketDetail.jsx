@@ -27,7 +27,6 @@ export const TicketDetail = () => {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  // Editable Agent Fields
   const [status, setStatus] = useState('');
   const [priority, setPriority] = useState('');
   const [assignedTo, setAssignedTo] = useState('');
@@ -55,7 +54,7 @@ export const TicketDetail = () => {
         const res = await api.get('/users?role=agent');
         setAgents(res.data.users || []);
       } catch (err) {
-        console.warn('Failed to load agents list:', err);
+        console.warn(err);
       }
     }
   };
@@ -150,7 +149,6 @@ export const TicketDetail = () => {
 
   return (
     <div className="main-content">
-      {/* Back button */}
       <div style={{ marginBottom: '1.25rem' }}>
         <button
           onClick={() => navigate(isAgent ? '/agent-dashboard' : '/dashboard')}
@@ -177,7 +175,6 @@ export const TicketDetail = () => {
       )}
 
       <div style={{ display: 'grid', gridTemplateColumns: isAgent ? '2fr 1fr' : '1fr', gap: '1.5rem', alignItems: 'start' }}>
-        {/* Left Column: Ticket Details & Comments */}
         <div>
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: '1.75rem', boxShadow: 'var(--shadow-sm)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
@@ -196,7 +193,6 @@ export const TicketDetail = () => {
               </div>
             </div>
 
-            {/* Customer Details info block */}
             <div style={{ marginTop: '1.25rem', padding: '0.875rem', background: '#f8fafc', borderRadius: 'var(--radius-sm)', display: 'flex', flexWrap: 'wrap', gap: '1.25rem', fontSize: '0.85rem', color: '#475569' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <User size={15} color="#64748b" />
@@ -212,7 +208,6 @@ export const TicketDetail = () => {
               </div>
             </div>
 
-            {/* Description */}
             <div style={{ marginTop: '1.5rem' }}>
               <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: '#334155', marginBottom: '0.5rem' }}>
                 Description
@@ -223,11 +218,9 @@ export const TicketDetail = () => {
             </div>
           </div>
 
-          {/* Comments Section */}
           <CommentSection ticketId={ticket.id} />
         </div>
 
-        {/* Right Column: Agent Management Panel */}
         {isAgent && (
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: '1.5rem', boxShadow: 'var(--shadow-sm)' }}>
             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>

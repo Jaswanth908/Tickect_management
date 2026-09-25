@@ -1,14 +1,5 @@
--- =====================================================================
--- Support Ticket Management System - Example Database Queries
--- =====================================================================
-
 USE support_ticket_db;
 
--- ---------------------------------------------------------------------
--- 1. Section 8 Requirement Query:
--- "Write a query that returns all open tickets along with the customer's
---  name and email. The query should demonstrate use of a JOIN and filtering."
--- ---------------------------------------------------------------------
 SELECT 
     t.id AS ticket_id,
     t.subject,
@@ -23,9 +14,6 @@ INNER JOIN users u ON t.user_id = u.id
 WHERE t.status = 'Open'
 ORDER BY t.created_at DESC;
 
--- ---------------------------------------------------------------------
--- 2. Query to retrieve all tickets with Customer name and Assigned Agent name (LEFT JOIN)
--- ---------------------------------------------------------------------
 SELECT 
     t.id AS ticket_id,
     t.subject,
@@ -45,9 +33,6 @@ INNER JOIN users customer ON t.user_id = customer.id
 LEFT JOIN users agent ON t.assigned_to = agent.id
 ORDER BY t.created_at DESC;
 
--- ---------------------------------------------------------------------
--- 3. Query to retrieve ticket conversation/comments with author details
--- ---------------------------------------------------------------------
 SELECT 
     tc.id AS comment_id,
     tc.ticket_id,
@@ -62,9 +47,6 @@ INNER JOIN users u ON tc.user_id = u.id
 WHERE tc.ticket_id = 1
 ORDER BY tc.created_at ASC;
 
--- ---------------------------------------------------------------------
--- 4. Query to get Agent Dashboard summary statistics
--- ---------------------------------------------------------------------
 SELECT 
     COUNT(*) AS total_tickets,
     SUM(CASE WHEN status = 'Open' THEN 1 ELSE 0 END) AS open_tickets,

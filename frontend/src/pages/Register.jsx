@@ -17,7 +17,6 @@ export const Register = () => {
     e.preventDefault();
     setError('');
 
-    // Client validation
     if (!name.trim() || !email.trim() || !password) {
       setError('Please fill in all required fields.');
       return;

@@ -1,9 +1,5 @@
 const { pool } = require('../config/db');
 
-/**
- * GET /api/tickets/:id/comments
- * Get all comments/responses for a specific ticket
- */
 const getComments = async (req, res, next) => {
   try {
     const ticketId = parseInt(req.params.id, 10);
@@ -14,7 +10,6 @@ const getComments = async (req, res, next) => {
       });
     }
 
-    // Check if ticket exists and user has permission to access it
     const [tickets] = await pool.execute(
       'SELECT id, user_id FROM tickets WHERE id = ? LIMIT 1',
       [ticketId]
@@ -29,7 +24,6 @@ const getComments = async (req, res, next) => {
 
     const ticket = tickets[0];
 
-    // Customer can only view comments on their own ticket
     if (req.user.role === 'customer' && ticket.user_id !== req.user.id) {
       return res.status(403).json({
         success: false,
@@ -37,7 +31,6 @@ const getComments = async (req, res, next) => {
       });
     }
 
-    // Retrieve comments joined with user details
     const [comments] = await pool.execute(
       `SELECT 
         c.id,
@@ -65,10 +58,6 @@ const getComments = async (req, res, next) => {
   }
 };
 
-/**
- * POST /api/tickets/:id/comments
- * Add a comment or response to a ticket
- */
 const addComment = async (req, res, next) => {
   try {
     const ticketId = parseInt(req.params.id, 10);
@@ -87,7 +76,6 @@ const addComment = async (req, res, next) => {
       });
     }
 
-    // Verify ticket exists
     const [tickets] = await pool.execute(
       'SELECT id, user_id, status FROM tickets WHERE id = ? LIMIT 1',
       [ticketId]
@@ -102,7 +90,6 @@ const addComment = async (req, res, next) => {
 
     const ticket = tickets[0];
 
-    // Customer cannot comment on another customer's ticket
     if (req.user.role === 'customer' && ticket.user_id !== req.user.id) {
       return res.status(403).json({
         success: false,
@@ -110,7 +97,6 @@ const addComment = async (req, res, next) => {
       });
     }
 
-    // Insert comment
     const [result] = await pool.execute(
       'INSERT INTO ticket_comments (ticket_id, user_id, comment) VALUES (?, ?, ?)',
       [ticketId, req.user.id, comment.trim()]
@@ -118,7 +104,6 @@ const addComment = async (req, res, next) => {
 
     const commentId = result.insertId;
 
-    // Fetch created comment with author info
     const [createdCommentRows] = await pool.execute(
       `SELECT 
         c.id,

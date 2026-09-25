@@ -34,7 +34,6 @@ a {
   text-decoration: none;
 }
 
-/* Layout */
 .app-container {
   min-height: 100vh;
   display: flex;
@@ -49,7 +48,6 @@ a {
   padding: 2rem 1rem;
 }
 
-/* Navbar */
 .navbar {
   background-color: var(--bg-card);
   border-bottom: 1px solid var(--border-color);
@@ -108,7 +106,6 @@ a {
   margin-top: 2px;
 }
 
-/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -154,7 +151,6 @@ a {
   cursor: not-allowed;
 }
 
-/* Badges */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -166,7 +162,6 @@ a {
   line-height: 1;
 }
 
-/* Status Badges */
 .badge-status-open {
   background-color: #e0f2fe;
   color: #0369a1;
@@ -188,7 +183,6 @@ a {
   border: 1px solid #cbd5e1;
 }
 
-/* Priority Badges */
 .badge-priority-low {
   background-color: #f1f5f9;
   color: #475569;
@@ -206,7 +200,6 @@ a {
   color: #e11d48;
 }
 
-/* Cards & Grid */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -246,7 +239,6 @@ a {
   font-weight: 500;
 }
 
-/* Ticket List & Card */
 .tickets-header {
   display: flex;
   justify-content: space-between;
@@ -316,7 +308,6 @@ a {
   gap: 0.5rem;
 }
 
-/* Filter Bar */
 .filter-bar {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -354,7 +345,6 @@ a {
   cursor: pointer;
 }
 
-/* Forms & Auth Pages */
 .auth-wrapper {
   min-height: calc(100vh - 120px);
   display: flex;
@@ -421,7 +411,6 @@ textarea.form-control {
   resize: vertical;
 }
 
-/* Alerts */
 .alert {
   padding: 0.75rem 1rem;
   border-radius: var(--radius-sm);
@@ -447,7 +436,6 @@ textarea.form-control {
   border: 1px solid #bae6fd;
 }
 
-/* Modal */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -481,7 +469,6 @@ textarea.form-control {
   font-weight: 700;
 }
 
-/* Comments timeline */
 .comments-container {
   margin-top: 2rem;
   display: flex;
@@ -523,7 +510,6 @@ textarea.form-control {
   white-space: pre-wrap;
 }
 
-/* Loading Spinner */
 .spinner {
   border: 3px solid #f3f3f3;
   border-top: 3px solid var(--primary);

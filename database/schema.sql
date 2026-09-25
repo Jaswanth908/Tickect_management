@@ -1,17 +1,10 @@
--- Support Ticket Management System
--- Database Schema Definition
-
--- Create database if not exists
 CREATE DATABASE IF NOT EXISTS support_ticket_db;
 USE support_ticket_db;
 
--- 1. Drop existing tables in reverse order of foreign key dependencies
 DROP TABLE IF EXISTS ticket_comments;
 DROP TABLE IF EXISTS tickets;
 DROP TABLE IF EXISTS users;
 
--- 2. Users Table
--- Stores customer and support agent information
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -23,8 +16,6 @@ CREATE TABLE users (
     INDEX idx_users_role (role)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 3. Tickets Table
--- Stores support tickets created by customers, managed by agents
 CREATE TABLE tickets (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -44,8 +35,6 @@ CREATE TABLE tickets (
     INDEX idx_tickets_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 4. Ticket Comments Table
--- Stores conversation thread and responses between customers and agents
 CREATE TABLE ticket_comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ticket_id INT NOT NULL,

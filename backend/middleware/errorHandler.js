@@ -1,10 +1,6 @@
-/**
- * Global Error Handling Middleware
- */
 const errorHandler = (err, req, res, next) => {
-  console.error('[Unhandled Error]:', err);
+  console.error(err);
 
-  // JSON parsing error
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
     return res.status(400).json({
       success: false,
@@ -12,7 +8,6 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // MySQL specific errors
   if (err.code === 'ER_DUP_ENTRY') {
     return res.status(409).json({
       success: false,

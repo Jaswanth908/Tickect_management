@@ -1,9 +1,5 @@
 const jwt = require('jsonwebtoken');
 
-/**
- * Authentication Middleware
- * Verifies JWT token from Authorization header and attaches user to req.user
- */
 const verifyToken = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization || req.headers.Authorization;
@@ -19,7 +15,7 @@ const verifyToken = (req, res, next) => {
     const secret = process.env.JWT_SECRET || 'super_secret_jwt_key_support_tickets_2024';
 
     const decoded = jwt.verify(token, secret);
-    req.user = decoded; // { id, name, email, role, iat, exp }
+    req.user = decoded;
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {

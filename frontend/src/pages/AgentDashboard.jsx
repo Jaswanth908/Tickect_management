@@ -25,7 +25,6 @@ export const AgentDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Filters & Sorting
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
@@ -38,7 +37,7 @@ export const AgentDashboard = () => {
         setStats(res.data.stats);
       }
     } catch (err) {
-      console.warn('Failed to load stats:', err);
+      console.warn(err);
     }
   };
 
@@ -90,7 +89,6 @@ export const AgentDashboard = () => {
         </p>
       </div>
 
-      {/* Ticket Metrics Cards */}
       <div className="stats-grid">
         <StatsCard
           title="Total Tickets"
@@ -129,7 +127,6 @@ export const AgentDashboard = () => {
         />
       </div>
 
-      {/* Filters & Sorting */}
       <FilterBar
         search={search}
         setSearch={setSearch}
@@ -149,7 +146,6 @@ export const AgentDashboard = () => {
         </div>
       )}
 
-      {/* Ticket List */}
       {loading ? (
         <div className="loading-center">
           <div className="spinner"></div>
