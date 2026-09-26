@@ -321,3 +321,5 @@ npm test
 5. Add Environment Variable:
    - `VITE_API_URL=https://support-ticket-api.onrender.com/api`
 6. Deploy! Your application is now live on the web.
+#   T i c k e c t _ m a n a g e m e n t  
+ 
