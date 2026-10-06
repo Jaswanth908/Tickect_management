@@ -16,7 +16,8 @@ const pool = mysql.createPool({
   queueLimit: 0,
   multipleStatements: true,
   enableKeepAlive: true,
-  keepAliveInitialDelay: 0
+  keepAliveInitialDelay: 0,
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined
 });
 
 const autoInitDatabase = async () => {
@@ -27,12 +28,14 @@ const autoInitDatabase = async () => {
       const seedPath = path.join(__dirname, '..', '..', 'database', 'seed.sql');
 
       if (fs.existsSync(schemaPath)) {
-        const schemaSql = fs.readFileSync(schemaPath, 'utf8');
+        let schemaSql = fs.readFileSync(schemaPath, 'utf8');
+        schemaSql = schemaSql.replace(/CREATE DATABASE[^\n;]*;/gi, '').replace(/USE [^\n;]*;/gi, '');
         await pool.query(schemaSql);
       }
 
       if (fs.existsSync(seedPath)) {
-        const seedSql = fs.readFileSync(seedPath, 'utf8');
+        let seedSql = fs.readFileSync(seedPath, 'utf8');
+        seedSql = seedSql.replace(/USE [^\n;]*;/gi, '');
         await pool.query(seedSql);
       }
     }
