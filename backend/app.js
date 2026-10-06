@@ -28,6 +28,16 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+app.post('/api/init-db', async (req, res, next) => {
+  try {
+    const { testConnection } = require('./config/db');
+    await testConnection();
+    res.json({ success: true, message: 'Database initialized successfully.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/users', userRoutes);

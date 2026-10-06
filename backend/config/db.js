@@ -20,21 +20,44 @@ const pool = mysql.createPool({
   ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined
 });
 
+const getSchemaSql = () => {
+  const candidates = [
+    path.join(__dirname, '..', 'database', 'schema.sql'),
+    path.join(__dirname, '..', '..', 'database', 'schema.sql')
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      return fs.readFileSync(p, 'utf8');
+    }
+  }
+  return '';
+};
+
+const getSeedSql = () => {
+  const candidates = [
+    path.join(__dirname, '..', 'database', 'seed.sql'),
+    path.join(__dirname, '..', '..', 'database', 'seed.sql')
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      return fs.readFileSync(p, 'utf8');
+    }
+  }
+  return '';
+};
+
 const autoInitDatabase = async () => {
   try {
     const [tables] = await pool.query('SHOW TABLES LIKE "users"');
     if (tables.length === 0) {
-      const schemaPath = path.join(__dirname, '..', '..', 'database', 'schema.sql');
-      const seedPath = path.join(__dirname, '..', '..', 'database', 'seed.sql');
-
-      if (fs.existsSync(schemaPath)) {
-        let schemaSql = fs.readFileSync(schemaPath, 'utf8');
+      let schemaSql = getSchemaSql();
+      if (schemaSql) {
         schemaSql = schemaSql.replace(/CREATE DATABASE[^\n;]*;/gi, '').replace(/USE [^\n;]*;/gi, '');
         await pool.query(schemaSql);
       }
 
-      if (fs.existsSync(seedPath)) {
-        let seedSql = fs.readFileSync(seedPath, 'utf8');
+      let seedSql = getSeedSql();
+      if (seedSql) {
         seedSql = seedSql.replace(/USE [^\n;]*;/gi, '');
         await pool.query(seedSql);
       }
